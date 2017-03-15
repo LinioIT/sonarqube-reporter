@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>SonarQube report for {{ project.name }}</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="http://prismjs.com/themes/prism.css" data-noprefix />
+        <link rel="stylesheet" href="http://prismjs.com/plugins/line-highlight/prism-line-highlight.css" data-noprefix />
+        <link rel="stylesheet" href="http://prismjs.com/plugins/line-numbers/prism-line-numbers.css" data-noprefix />
+
+        <style type="text/css">
+            .severity-box {
+                border-radius: 10px;
+            }
+
+            .severity-box .title {
+                font-weight: bold;
+                font-size: 200%;
+            }
+
+            .severity-box .value {
+                font-weight: bold;
+                font-size: 300%;
+            }
+
+            .severity-info {
+                background: #5fceee;
+            }
+
+            .severity-minor {
+                background: #f0f666;
+            }
+
+            .severity-major {
+                background: #eca03a;
+            }
+
+            .severity-critical {
+                background: #ff3333;
+            }
+
+            .severity-blocker {
+                background: #c10b0b;
+            }
+
+            .col-xs-5ths,
+            .col-sm-5ths,
+            .col-md-5ths,
+            .col-lg-5ths {
+                position: relative;
+                min-height: 1px;
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+
+            .col-xs-5ths {
+                width: 20%;
+                float: left;
+            }
+
+            @media (min-width: 768px) {
+                .col-sm-5ths {
+                    width: 20%;
+                    float: left;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .col-md-5ths {
+                    width: 20%;
+                    float: left;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .col-lg-5ths {
+                    width: 20%;
+                    float: left;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        SonarQube Report For {{ project.name }}
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                {% for severity in ['INFO', 'MINOR', 'MAJOR', 'CRITICAL', 'BLOCKER'] %}
+                    <div class="col-md-5ths col-xs-6 text-center">
+                        <div class="severity-box severity-{{ severity|lower }}">
+                            <span class="title clearfix">{{ severity }}</span>
+                            <span class="value">{{ project.issueCount.get(severity) }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% for file in project.files %}
+                <div class="page-header">
+                    <h3>{{ file.path }} <small>{{ file.issues|length }} issue(s)</small></h3>
+                </div>
+
+                {% for issue in file.issues %}
+                    <div class="well well-sm severity-{{ issue.severity|lower }}">
+                        <h4>Severity: {{ issue.severity|lower|capitalize }} - {{ issue.message }} <small>@ line {{ issue.line }}</small></h4>
+
+<pre class="language-js line-numbers" data-line="4" data-start="{{ issue.line - 3 }}"><code>{% for line in file.content.linesList %}{% if line.line >= issue.line - 3 and line.line <= issue.line + 3 %}{{ line.source|escape ~ "\n"}}{% endif %}{% endfor %}</code></pre>
+
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="http://prismjs.com/prism.js"></script>
+        <script src="http://prismjs.com/plugins/line-highlight/prism-line-highlight.js"></script>
+        <script src="http://prismjs.com/plugins/line-numbers/prism-line-numbers.js"></script>
+    </body>
+</html>
