@@ -1,6 +1,7 @@
 package com.linio.sonarqube.reporter.output;
 
 import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.interpret.RenderResult;
 import com.linio.sonarqube.reporter.entity.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,9 @@ public class HtmlOutput implements Output
             context.put("project", project);
 
             logger.info("Rendering " + project.getName());
-            String renderedTemplate = jinjava.render(loadTemplate("html/project_issues.html"), context);
+            RenderResult renderedTemplate = jinjava.renderForResult(loadTemplate("html/project_issues.html"), context);
 
-            writeFile(project.getName(), renderedTemplate);
+            writeFile(project.getName(), renderedTemplate.getOutput());
         }
     }
 
